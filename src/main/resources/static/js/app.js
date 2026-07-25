@@ -3,7 +3,7 @@
    Consome a API do backend Spring Boot
    ============================================ */
 
-const API = 'http://localhost:8080';
+const API = '';
 
 // Estado da tela
 let congregacoes = [];   // [{ id, nome, adolescentes, jovens }]
