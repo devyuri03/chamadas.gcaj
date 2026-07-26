@@ -251,7 +251,8 @@ header{
    Maestros
    ============================================ */
 
-.maestro{
+.maestro,
+.dirigente{
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -264,7 +265,8 @@ header{
   user-select:none;
 }
 
-.maestro span{
+.maestro span,
+.dirigente span{
   font-size:14px;
   font-weight:600;
   color:var(--texto);
@@ -292,16 +294,19 @@ header{
   opacity:0;
 }
 
-.maestro.ativo .check{
+.maestro.ativo .check,
+.dirigente.ativo .check{
   background:var(--azul);
   border-color:var(--azul);
 }
 
-.maestro.ativo .check svg{
+.maestro.ativo .check svg,
+.dirigente.ativo .check svg{
   opacity:1;
 }
 
-.maestro:focus-visible{
+.maestro:focus-visible,
+.dirigente:focus-visible{
   outline:2px solid var(--dourado);
   outline-offset:2px;
 }

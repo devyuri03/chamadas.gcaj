@@ -22,6 +22,8 @@ public class DirigentesController {
 
 
 
+
+
     public ResponseEntity<List<DirigentesResponseDTO>> listar() {
         List<DirigentesResponseDTO> dirigentes = dirigentesRepository.findAll().stream()
                 .map(DirigentesResponseDTO::from)

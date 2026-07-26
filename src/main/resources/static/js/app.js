@@ -8,6 +8,7 @@ const API = '';
 // Estado da tela
 let congregacoes = [];   // [{ id, nome, adolescentes, jovens }]
 let maestros = [];       // [{ id, nome, presente }]
+let dirigentes = [];     // [{ id, nome, presente }]
 
 const $ = id => document.getElementById(id);
 
@@ -18,18 +19,21 @@ const $ = id => document.getElementById(id);
 
 async function carregar() {
   try {
-    const [rc, rm] = await Promise.all([
+    const [rc, rm, rd] = await Promise.all([
       fetch(API + '/congregacoes'),
-      fetch(API + '/maestros')
+      fetch(API + '/maestros'),
+      fetch(API + '/dirigentes')
     ]);
 
-    if (!rc.ok || !rm.ok) throw new Error('Falha ao carregar dados.');
+    if (!rc.ok || !rm.ok || !rd.ok) throw new Error('Falha ao carregar dados.');
 
     congregacoes = (await rc.json()).map(c => ({ ...c, adolescentes: 0, jovens: 0 }));
     maestros = (await rm.json()).map(m => ({ ...m, presente: false }));
+    dirigentes = (await rd.json()).map(d => ({ ...d, presente: false }));
 
     renderCongregacoes();
     renderMaestros();
+    renderDirigentes();
     atualizarTotais();
 
   } catch (e) {
@@ -79,6 +83,17 @@ function renderMaestros() {
   `).join('');
 }
 
+function renderDirigentes() {
+  $('lista-dirigentes').innerHTML = dirigentes.map((d, i) => `
+    <div class="dirigente" data-dg="${i}" role="checkbox" aria-checked="false" tabindex="0">
+      <span>${d.nome}</span>
+      <div class="check">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    </div>
+  `).join('');
+}
+
 
 /* ============================================
    Interação
@@ -90,6 +105,9 @@ document.addEventListener('click', e => {
 
   const mae = e.target.closest('.maestro');
   if (mae) return alternarMaestro(+mae.dataset.m);
+
+  const dir = e.target.closest('.dirigente');
+  if (dir) return alternarDirigente(+dir.dataset.dg);
 });
 
 document.addEventListener('keydown', e => {
@@ -97,6 +115,12 @@ document.addEventListener('keydown', e => {
   if (mae && (e.key === ' ' || e.key === 'Enter')) {
     e.preventDefault();
     alternarMaestro(+mae.dataset.m);
+  }
+
+  const dir = e.target.closest('.dirigente');
+  if (dir && (e.key === ' ' || e.key === 'Enter')) {
+    e.preventDefault();
+    alternarDirigente(+dir.dataset.dg);
   }
 });
 
@@ -126,15 +150,27 @@ function alternarMaestro(i) {
   atualizarTotais();
 }
 
+function alternarDirigente(i) {
+  dirigentes[i].presente = !dirigentes[i].presente;
+
+  const el = document.querySelector(`.dirigente[data-dg="${i}"]`);
+  el.classList.toggle('ativo', dirigentes[i].presente);
+  el.setAttribute('aria-checked', dirigentes[i].presente);
+
+  atualizarTotais();
+}
+
 function atualizarTotais() {
   const ado = congregacoes.reduce((s, c) => s + c.adolescentes, 0);
   const jov = congregacoes.reduce((s, c) => s + c.jovens, 0);
   const mae = maestros.filter(m => m.presente).length;
+  const dir = dirigentes.filter(d => d.presente).length;
 
   $('r-ado').textContent = ado;
   $('r-jov').textContent = jov;
   $('r-mae').textContent = `${mae}/${maestros.length}`;
-  $('badge-total').textContent = ado + jov + mae;
+  $('r-dir').textContent = `${dir}/${dirigentes.length}`;
+  $('badge-total').textContent = ado + jov + mae + dir;
 }
 
 
@@ -162,6 +198,10 @@ async function salvar() {
     maestros: maestros.map(m => ({
       maestroId: m.id,
       presente: m.presente
+    })),
+    dirigentes: dirigentes.map(d => ({
+      dirigenteId: d.id,
+      presente: d.presente
     }))
   };
 
@@ -195,9 +235,11 @@ async function salvar() {
 function zerar() {
   congregacoes.forEach(c => { c.adolescentes = 0; c.jovens = 0; });
   maestros.forEach(m => m.presente = false);
+  dirigentes.forEach(d => d.presente = false);
 
   renderCongregacoes();
   renderMaestros();
+  renderDirigentes();
   atualizarTotais();
 }
 
