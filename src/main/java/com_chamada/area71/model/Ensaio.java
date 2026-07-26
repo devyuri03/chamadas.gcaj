@@ -32,4 +32,7 @@ public class Ensaio {
     @OneToMany(mappedBy = "ensaio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PresencaMaestro> presencasMaestro = new ArrayList<>();
 
+    @OneToMany(mappedBy = "ensaio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PresencaDirigentes> presencasDirigentes = new ArrayList<>();
+
 }

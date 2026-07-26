@@ -16,7 +16,9 @@ public record EnsaioResponseDTO(
 
         List<PresencaCongregacaoResponseDTO> congregacoes,
 
-        List<PresencaMaestroResponseDTO> maestros
+        List<PresencaMaestroResponseDTO> maestros,
+
+        List<PresencaDirigentesResponseDTO> dirigentes
 
 ) {
 
@@ -30,6 +32,9 @@ public record EnsaioResponseDTO(
                         .toList(),
                 ensaio.getPresencasMaestro().stream()
                         .map(PresencaMaestroResponseDTO::from)
+                        .toList(),
+                ensaio.getPresencasDirigentes().stream()
+                        .map(PresencaDirigentesResponseDTO::from)
                         .toList()
         );
     }

@@ -4,11 +4,14 @@ import com_chamada.area71.DTO.EnsaioRequestDTO;
 import com_chamada.area71.DTO.EnsaioResponseDTO;
 import com_chamada.area71.exception.EnsaioJaExisteException;
 import com_chamada.area71.model.Congregacao;
+import com_chamada.area71.model.Dirigentes;
 import com_chamada.area71.model.Ensaio;
 import com_chamada.area71.model.Maestro;
 import com_chamada.area71.model.PresencaCongregacao;
+import com_chamada.area71.model.PresencaDirigentes;
 import com_chamada.area71.model.PresencaMaestro;
 import com_chamada.area71.repository.CongregacaoRepository;
+import com_chamada.area71.repository.DirigentesRepository;
 import com_chamada.area71.repository.EnsaioRepository;
 import com_chamada.area71.repository.MaestroRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +29,7 @@ public class EnsaioService {
     private final EnsaioRepository ensaioRepository;
     private final CongregacaoRepository congregacaoRepository;
     private final MaestroRepository maestroRepository;
+    private final DirigentesRepository dirigentesRepository;
 
     @Transactional
     public EnsaioResponseDTO criar(EnsaioRequestDTO dto) {
@@ -62,6 +66,20 @@ public class EnsaioService {
                 presenca.setMaestro(maestro);
                 presenca.setPresente(m.presente());
                 ensaio.getPresencasMaestro().add(presenca);
+            });
+        }
+
+        if (dto.dirigentes() != null) {
+            dto.dirigentes().forEach(d -> {
+                Dirigentes dirigente = dirigentesRepository.findById(d.dirigenteId())
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                "Dirigente não encontrado: " + d.dirigenteId()));
+
+                PresencaDirigentes presenca = new PresencaDirigentes();
+                presenca.setEnsaio(ensaio);
+                presenca.setDirigente(dirigente);
+                presenca.setPresente(d.presente());
+                ensaio.getPresencasDirigentes().add(presenca);
             });
         }
 

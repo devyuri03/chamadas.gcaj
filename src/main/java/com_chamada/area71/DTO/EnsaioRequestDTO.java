@@ -16,7 +16,10 @@ public record EnsaioRequestDTO(
         List<PresencaCongregacaoRequestDTO> congregacoes,
 
         @Valid
-        List<PresencaMaestroRequestDTO> maestros
+        List<PresencaMaestroRequestDTO> maestros,
+
+        @Valid
+        List<PresencaDirigentesRequestDTO> dirigentes
 
 ) {
 }
